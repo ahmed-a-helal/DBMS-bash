@@ -1,54 +1,74 @@
 #! /usr/bin/bash
-TABLE=test
+TABLE=data/database1/table1
 COLUMN_DELIMITER=:
 COLUMN_INFO_DELIMITER=,
+declare -a TABLE_DATA
+TABLE_DATA[1]="ahmed attia"
+TABLE_DATA[2]=2ahmed
+TABLE_DATA[3]=1995-12-04
 insert() {
 : '
 	this is a function takes refined data in correct order
 	and then writes it into the table file using specific delimiter
 '
-	IFS=$COLUMN_DELIMITER; echo "$*" >> "$TABLE"
+	if ( chk_table );then
+		IFS=$COLUMN_DELIMITER; echo "${TABLE_DATA[*]}" >> "$TABLE" && return 0
+	else
+		return $?
+	fi
 }
 chk_column() {
 : '
 	this function takes 3 arguments 
 	$1 the full metadata 
 	$2 is the index of the column we want to check
-       	$3 is the data we want to enter in this field	
+    $3 is the data we want to enter in this field	
 '
 	local COLUMN_INFO=($( cut -d"$COLUMN_INFO_DELIMITER" -f 1,2,3 --output-delimiter=' '<<< $( cut -d"$COLUMN_DELIMITER" -f $2 <<< $1 )))
-	echo ${COLUMN_INFO[*]}
-	chkdatatype ${COLUMN_INFO[2]} $3 && chkprimarykey ${COLUMN_INFO[3]} $2  $3   && return 0 $3 || return $?
+	chkdatatype ${COLUMN_INFO[1]} $3 && \
+		chkprimarykey "${COLUMN_INFO[2]}" "$2"  "$3" \
+		&& return 0 || return $? 
 }
 load_metadata() {
 	echo $( head -n 1 $TABLE )
 	
 }
 
-chkprimarykey(){
-	if [ chkprimarykey = 'pk'  ];then
-		for cell  in ($(cut -d$COLUMN_DELIMITER -f $2 $TABLE)); do
-			[ $cell = $3 ] && return 1
+chkprimarykey() {
+	if [ -n "$1" ]&&[ $1 = "pk" ]; then
+		for cell  in $( cut -d$COLUMN_DELIMITER -f $2 $TABLE ); do
+			[ $cell = $3 ] &&\
+			echo "primary key must have a unique value" && return 1
 		done
+		return 0
 	fi
 
 }
 
-z(){
+chkdatatype(){
 	case $1 in 
 		'text')
 			return 0
 		;;
 		'date')
-			[[ $2 =~ ^(\d{4}-(0[0-9]|1[0-2]){1}-(([0-2][0-9])|(3[0-1])))*$ ]] && return 0 || return 21
+			[[ $2 =~ ^([0-9]{4}-(0[0-9]|1[0-2]){1}-(([0-2][0-9])|(3[0-1])))*$ ]] &&\
+			return 0 ||\
+			(echo "please enter a valid entry for date datatype";return 21)
 		;;
 		'int')
-			[[  $2 =~ \d*  ]] && return 0  || return 22
+			[[  "$2" =~  ^[0-9]*$  ]] \
+			&& return 0  ||\
+			( echo "please enter a valid entry for int datatype";return 22 )
 		;;
 		'*')
 			return 23
 	esac
 }
 
-#echo `TABLE=test insert "ahmed attia" abdelmaksoud mohamed helal`
-chk_column "$( load_metadata)" 1 ahmed
+chk_table() {
+	local METADATA=$(load_metadata)
+	for i in "${!TABLE_DATA[@]}" ;do
+		chk_column $METADATA $i ${TABLE_DATA[$i]} || return $?
+	done
+	return 0
+}
