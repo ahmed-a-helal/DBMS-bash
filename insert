@@ -1,0 +1,54 @@
+#! /usr/bin/bash
+TABLE=test
+COLUMN_DELIMITER=:
+COLUMN_INFO_DELIMITER=,
+insert() {
+: '
+	this is a function takes refined data in correct order
+	and then writes it into the table file using specific delimiter
+'
+	IFS=$COLUMN_DELIMITER; echo "$*" >> "$TABLE"
+}
+chk_column() {
+: '
+	this function takes 3 arguments 
+	$1 the full metadata 
+	$2 is the index of the column we want to check
+       	$3 is the data we want to enter in this field	
+'
+	local COLUMN_INFO=($( cut -d"$COLUMN_INFO_DELIMITER" -f 1,2,3 --output-delimiter=' '<<< $( cut -d"$COLUMN_DELIMITER" -f $2 <<< $1 )))
+	echo ${COLUMN_INFO[*]}
+	chkdatatype ${COLUMN_INFO[2]} $3 && chkprimarykey ${COLUMN_INFO[3]} $2  $3   && return 0 $3 || return $?
+}
+load_metadata() {
+	echo $( head -n 1 $TABLE )
+	
+}
+
+chkprimarykey(){
+	if [ chkprimarykey = 'pk'  ];then
+		for cell  in ($(cut -d$COLUMN_DELIMITER -f $2 $TABLE)); do
+			[ $cell = $3 ] && return 1
+		done
+	fi
+
+}
+
+z(){
+	case $1 in 
+		'text')
+			return 0
+		;;
+		'date')
+			[[ $2 =~ ^(\d{4}-(0[0-9]|1[0-2]){1}-(([0-2][0-9])|(3[0-1])))*$ ]] && return 0 || return 21
+		;;
+		'int')
+			[[  $2 =~ \d*  ]] && return 0  || return 22
+		;;
+		'*')
+			return 23
+	esac
+}
+
+#echo `TABLE=test insert "ahmed attia" abdelmaksoud mohamed helal`
+chk_column "$( load_metadata)" 1 ahmed
