@@ -1,0 +1,20 @@
+#! /bin/bash
+
+#read the db name
+
+read -r -p "Enter the db name : " db_name
+
+# function to delete data
+
+function delete_db_table() {
+   if [[ -d $1 ]]; then
+   
+   rm -rf data/$1
+   
+   else 
+   	echo " there is no database with this name "
+   	return 101
+   	fi
+}
+
+delete_db_table $db_name
