@@ -1,0 +1,21 @@
+#! /bin/bash	
+	custom_read(){
+	
+	set -o noglob
+		
+	read -r -p "enter your input : " readout
+		
+	if [[ $readout =~ [a-zA-Z0-9]*$ ]] ; then
+	
+	set +o noglob
+	
+	return 0
+		
+	else
+	
+	echo " your name is not valid be serious "
+		
+	return 102
+		
+	fi
+		}
