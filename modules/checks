@@ -37,6 +37,7 @@ chk_datatype() {
 		;;
 		"*")
 			return 23
+		;;
 	esac
 }
 
