@@ -1,0 +1,15 @@
+#! /usr/bin/bash
+load_metadata() {
+: '
+	this function loads metadata of the required table
+'
+	echo $( head -n 1 $TABLE )
+}
+
+getprimarykeycolumn() {
+    : '
+        this function get the column number of the primary key column
+        $1 is the supplied metadata of the TABLE
+    '
+	echo "$1" | tr "$COLUMN_DELIMITER" "\n"| grep -ne ',pk$' | cut -d':' -f1  
+}
