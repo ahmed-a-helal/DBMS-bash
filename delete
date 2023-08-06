@@ -1,16 +1,20 @@
 #! /bin/bash
 
-#read the db name and take the input to "db_name"
 
-read -r -p "Enter the db name : " db_name
+
+source modules/custom_read
+
+#take the input to check if its exist to delete or not exist
+
+custom_read
 
 # function to delete data_base if its exist :
 
-function delete_db_table() {
+function delete_database() {
 
 	#if the dir id esist :	
 	
-   if [[ -d $1 ]]; then
+   if [[ -d data/$1 ]]; then
    
    rm -rf data/$1
    
@@ -24,4 +28,4 @@ function delete_db_table() {
    	fi
 }
 
-delete_db_table $db_name
+delete_database $readout
