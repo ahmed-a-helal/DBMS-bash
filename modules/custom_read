@@ -1,11 +1,14 @@
 #! /bin/bash	
+# the main read function to ignor special cases and make sure the name contains only
+# upper , lower case char , num , spaces and {_,-} only
+
 	custom_read(){
 	
 	set -o noglob
 		
 	read -r -p "enter your input : " readout
 		
-	if [[ $readout =~ [a-zA-Z0-9]*$ ]] ; then
+	if [[ $readout =~ [a-zA-Z0-9_[:space:]-]+$ ]] ; then
 	
 	set +o noglob
 	
