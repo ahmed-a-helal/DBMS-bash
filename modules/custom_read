@@ -2,23 +2,23 @@
 # the main read function to ignor special cases and make sure the name contains only
 # upper , lower case char , num , spaces and {_,-} only
 
-	custom_read(){
+custom_read(){
+
+set -o noglob
 	
-	set -o noglob
-		
-	read -r -p "enter your input : " readout
-		
-	if [[ $readout =~ [a-zA-Z0-9_[:space:]-]+$ ]] ; then
+read -r -p "enter your input : " readout
 	
-	set +o noglob
+if [[ $readout =~ [a-zA-Z0-9_[:space:]-]+$ ]] ; then
+
+set +o noglob
+
+return 0
 	
-	return 0
-		
-	else
+else
+
+echo " your name is not valid be serious "
 	
-	echo " your name is not valid be serious "
-		
-	return 102
-		
-	fi
-		}
+return 102
+	
+fi
+	}

@@ -1,4 +1,6 @@
 #! /usr/bin/bash
+
+./querytable
 chk_unique() {
 : '
 	this function checks for Unique columns entry duplication
@@ -7,7 +9,7 @@ chk_unique() {
 '
 	[ -n "$2" ] || 
 		{ echo this column must have nonzero value; return 1; }
-	for cell  in $( cut -d$COLUMN_DELIMITER -f $1 $TABLE | tail -n +2 ); do
+	for cell  in $( load_column $1 ); do
 		[ $cell != $2 ] ||\
 			{ echo "this column must have a unique value"; return 2; }
 	done
@@ -50,8 +52,7 @@ chk_column() {
 		"PKCOLUMN" is the column number of the primary key
 		"METADATA" is the loaded metadata of the table
 '
-	declare -a COLUMN_INFO=($(echo "$METADATA" | cut -d"$COLUMN_DELIMITER" -f $1 |\
-		cut -d"$COLUMN_INFO_DELIMITER" -f 1,2,3 --output-delimiter=' '))
+	declare -a COLUMN_INFO=($( load_column_info $METADATA $1))
 	chk_datatype ${COLUMN_INFO[1]} $2 && {  
 		[ $PKCOLUMN != $1  ]  || chk_unique "$1" "$2"; 
 		} && return 0 || return $? 

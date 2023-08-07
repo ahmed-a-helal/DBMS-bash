@@ -1,4 +1,7 @@
 #! /usr/bin/bash
+COLUMN_DELIMITER=:
+COLUMN_INFO_DELIMITER=,
+
 load_metadata() {
 : '
 	this function loads metadata of the required table
@@ -12,4 +15,13 @@ getprimarykeycolumn() {
         $1 is the supplied metadata of the TABLE
     '
 	echo "$1" | tr "$COLUMN_DELIMITER" "\n"| grep -ne ',pk$' | cut -d':' -f1  
+}
+
+load_column(){
+	tail -n +2 $TABLE |cut -d$COLUMN_DELIMITER -f $1 
+}
+
+load_column_info(){
+    echo "$1" | cut -d"$COLUMN_DELIMITER" -f $2 |\
+		cut -d"$COLUMN_INFO_DELIMITER" -f 1,2,3 --output-delimiter=' '
 }

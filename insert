@@ -1,16 +1,15 @@
 #! /usr/bin/bash
 TABLE=data/database1/table1
-COLUMN_DELIMITER=:
-COLUMN_INFO_DELIMITER=,
-declare -a TABLE_DATA=( "" "" "" )
-source ./modules/getinfo
+declare -a TABLE_DATA=( "salah" "4" "1992-00-31" )
+source ./modules/querytable
 source ./modules/checks
 
 insert() {
 : '
-	this is a function takes refined data in correct order using array in this syntax TABLE_DATA[column_number] ="insert_data"
-	then checks the data to follow the constraints
-	and then writes it into the table file using specific delimiter
+	this is a function takes refined data in correct order using array 
+	in this syntax TABLE_DATA[column_number] ="insert_data"
+	then checks the data to follow the constraints 
+	then writes it into the table file using specific delimiter
 '
 	if ( chk_table );then
 		IFS=$COLUMN_DELIMITER; echo "${TABLE_DATA[*]}" >> "$TABLE" && return 0
@@ -18,4 +17,4 @@ insert() {
 		return $?
 	fi
 }
-insert
+insert 
