@@ -25,3 +25,6 @@ load_column_info(){
     echo "$1" | cut -d"$COLUMN_DELIMITER" -f $2 |\
 		cut -d"$COLUMN_INFO_DELIMITER" -f 1,2,3 --output-delimiter=' '
 }
+get_columns_names() {
+    cut -d "$COLUMN_DELIMITER" --fields=$1 | sed -e 's/,[,a-zA-Z]*:/ /g' -e 's/,.*$//g' -e 's/ /,/g'
+}

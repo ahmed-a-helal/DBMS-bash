@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 TABLE=data/database1/table1
-declare -a TABLE_DATA=( "salah" "4" "1992-00-31" )
+declare -a TABLE_DATA=( "hunga asdasasdfl;;alksdn;asdnklasndl" "50" "" )
 source ./modules/querytable
 source ./modules/checks
 

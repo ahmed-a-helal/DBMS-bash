@@ -1,6 +1,4 @@
 #! /usr/bin/bash
-
-./querytable
 chk_unique() {
 : '
 	this function checks for Unique columns entry duplication
@@ -20,7 +18,7 @@ chk_unique() {
 chk_datatype() {
 : '
 	this function checks for the datatype constraints
-	$1 the column metadata for the datatype
+	$1 the column metadata for the datatype or the datatype string
 	$2 the data that is checked 
 '
 	case $1 in 
@@ -33,7 +31,7 @@ chk_datatype() {
 			{ echo "please enter a valid entry for date datatype";return 21; }
 		;;
 		"int")
-			[[  "$2" =~  ^[0-9]*$  ]] \
+			[[ $2 =~ ^[0-9]*$ ]] \
 			&& return 0  ||\
 			{ echo "please enter a valid entry for int datatype";return 22; }
 		;;
