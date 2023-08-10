@@ -1,0 +1,38 @@
+#!/bin/bash
+#source modules/custom_read
+function check_and_create() {
+
+	read -r -p "enter your input : " readout
+	
+	if [[ -d "data/$readout" ]] ; then
+	
+		echo "this database already exist"
+		
+	elif [[ $readout =~ ^[a-zA-Z][a-zA-Z0-9_]*$ ]] && [ "$(echo $readout|wc -c)" -le 63 ] ; then
+	
+		create_database "$readout"
+		
+		echo "$readout"
+		return 0
+
+	else
+		echo " be serious enter a valid name ^-^ "
+        return 122
+	
+	fi
+}
+
+create_database() {
+
+
+mkdir data/"$1"
+
+}
+
+check_and_create
+
+
+
+
+
+
