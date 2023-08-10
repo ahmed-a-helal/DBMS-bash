@@ -4,21 +4,21 @@
 
 custom_read(){
 
-set -o noglob
-	
-read -r -p "enter your input : " readout
+	set -o noglob
+		
+	read -r "$@" readout
 	
 if [[ $readout =~ [a-zA-Z0-9_[:space:]-]+$ ]] ; then
 
-set +o noglob
+	set +o noglob
 
-return 0
+	return 0
 	
 else
 
-echo " your name is not valid be serious "
-	
-return 102
-	
+	echo " your input is not valid be serious "
+			
+	return 102
+		
 fi
 	}
