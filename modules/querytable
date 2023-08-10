@@ -28,3 +28,11 @@ load_column_info(){
 get_columns_names() {
     cut -d "$COLUMN_DELIMITER" --fields=$1 | sed -e 's/,[,a-zA-Z]*:/ /g' -e 's/,.*$//g' -e 's/ /,/g'
 }
+select_data() {
+    : ' 
+    $1 is the selected columns numbers passed as 1,2,3,4,.....
+    $2 is the selected  table rows passed as 1,2,3,4,.... 
+    '
+    [ -n "${2}" ] && programtext="$(echo NR==${2//,/' || NR=='})"
+	load_column $1 |awk "$programtext"
+}

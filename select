@@ -1,119 +1,21 @@
 #! /usr/bin/bash
-TABLE=data/database1/table1
 source modules/querytable
 source modules/checks
+source modules/where
+source modules/formats
+
+
+TABLE=data/database1/table1
 COLUMN_NO=1
 CONDITION=""
 INPUT=''
 declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
-where_fn() {
-    : '
-    $1 is the column we want to apply where clause to
-    $2 is the condition in case of int,Date  valued column  and flags in case of string valued columns
-    $3 is the input to the condition or string we want to search for  
-    global variables :
-        COLUMN_INFO
-    '
-    case ${COLUMN_INFO[1]} in
-        "int")
-            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && IntWhereOperation "$@" ||return $?
-        ;;
-        "date")
-            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && DateWhereOperation "$@" ||return $?
-        ;;
-        "text")
-            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && TextWhereOperation "$@" ||return $?
-        ;;
-        *)
-            echo please input right datatype
-            return 30
-    esac
 
-}
 
-DateWhereOperation() {
-    load_column $1 \
-        | sed -e "s/$/ $2 $3/" -e "s/-//g" | bc \
-        | grep -n '1$' |cut -d: -f 1 
-}
-TextWhereOperation() {
-    load_column $1 \
-        | grep -n "${@:2}" \
-        | cut -d: -f 1 
-}
-IntWhereOperation() {
-    load_column $1 \
-        | sed -e "s/$/ $2 $3/" | bc \
-        | grep -n '1$' |cut -d: -f 1 
-}
 #where_fn $COLUMN_NO $CONDITION $INPUT
 
 #  seq -s_ 32|tr -d '[:digit:]';tail -n +2 data/database1/table1|sed 's/$/:/'|column -ts : -o "|" -N name,number,birthdate |sed -e 's/^/|/' 
 # ;seq -s― 32|tr -d '[:digit:]'
-
-select_data() {
-    : ' 
-    $1 is the selected columns numbers passed as 1,2,3,4,.....
-    $2 is the selected  table rows passed as 1,2,3,4,.... 
-    '
-    [ -n "${2}" ] && programtext="$(echo NR==${2//,/' || NR=='})"
-	load_column $1 |awk "$programtext"
-}
-
-view_table() {
-    : '
-    the data is inputed through pipeline
-    $1 is the headers of the selected columns
-    '
-    # tee  >/dev/null >(view_columns $1|viewline '-') >(view_columns $1) >(view_columns $1|viewline '_') # spawning a bunch of subprocess to draw the table 
-    #view_columns $1 | tee >/dev/null >(sleep 2s && viewline '-') >(sleep 1s && cat -) >(viewline '_')
-    #wait $! #wait for all the child process to finish the execution
-    view_columns $1 | table
-}
-
-add_lines() {
-    : ' 
-    takes input from stadin and caluclates table width then prints a line accordingly 
-    '
-
-    local length=$(tee|head -1|wc -c)
-    seq -s$1 $length |tr -d '[:digit:]'
-}
-
-table() {
-    local table=$(tee)
-    echo -e "$table" | add_lines "_"
-    echo -e "$table"
-    echo -e "$table" | add_lines "—"
-}
-
-view_columns()
-{
-    tee |sed 's/$/:/'|column -W $1 -ts : -o "|" -N $1 | sed -e 's/^/|/'
-}
-
-
-Format_fn() {
-    if [ -p /dev/stdin ];then
-        temp=($(tee))
-        IFS=,;echo "${temp[*]}"
-    else
-        IFS=,; echo "$*"
-    fi
-}
-
-increment_fn() {
-    : '
-    this function takes inputs as stdinput or normal int inputs 
-    and outputs a multiline output of incremented numbers
-    to use with the output of where clause (where_fn)
-    '
-    if [ -p /dev/stdin ];then
-        tee | sed "s/$/+1/"  | bc
-    else
-        echo $@| tr " " "\n" | sed "s/$/+1/"  | bc
-    fi
-}
 
 select_fn() {
     local ROWSNUMBER

@@ -1,0 +1,52 @@
+where_fn() {
+    : '
+    $1 is the column we want to apply where clause to
+    $2 is the condition in case of int,Date  valued column  and flags in case of string valued columns
+    $3 is the input to the condition or string we want to search for  
+    global variables :
+        COLUMN_INFO
+    '
+    case ${COLUMN_INFO[1]} in
+        "int")
+            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && IntWhereOperation "$@" ||return $?
+        ;;
+        "date")
+            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && DateWhereOperation "$@" ||return $?
+        ;;
+        "text")
+            chk_datatype ${COLUMN_INFO[1]} ${@: -1} && TextWhereOperation "$@" ||return $?
+        ;;
+        *)
+            echo please input right datatype
+            return 30
+    esac
+
+}
+
+DateWhereOperation() {
+    load_column $1 \
+        | sed -e "s/$/ $2 $3/" -e "s/-//g" | bc \
+        | grep -n '1$' |cut -d: -f 1 
+}
+TextWhereOperation() {
+    load_column $1 \
+        | grep -n "${@:2}" \
+        | cut -d: -f 1 
+}
+IntWhereOperation() {
+    load_column $1 \
+        | sed -e "s/$/ $2 $3/" | bc \
+        | grep -n '1$' |cut -d: -f 1 
+}
+increment_fn() {
+    : '
+    this function takes inputs as stdinput or normal int inputs 
+    and outputs a multiline output of incremented numbers
+    to use with the output of where clause (where_fn)
+    '
+    if [ -p /dev/stdin ];then
+        tee | sed "s/$/+1/"  | bc
+    else
+        echo -n $@| tr " " "\n" | sed "s/$/+1/"  | bc
+    fi
+}

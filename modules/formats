@@ -1,0 +1,58 @@
+
+view_table() {
+    : '
+    the data is inputed through pipeline
+    $1 is the headers of the selected columns
+    '
+    # tee  >/dev/null >(view_columns $1|viewline '-') >(view_columns $1) >(view_columns $1|viewline '_') # spawning a bunch of subprocess to draw the table 
+    #view_columns $1 | tee >/dev/null >(sleep 2s && viewline '-') >(sleep 1s && cat -) >(viewline '_')
+    #wait $! #wait for all the child process to finish the execution
+    view_columns $1 | table
+}
+
+add_lines() {
+    : ' 
+    takes input from stadin and caluclates table width then prints a line accordingly 
+    '
+
+    local length=$(tee|head -1|wc -c)
+    seq -s$1 $length |tr -d '[:digit:]'
+}
+
+table() {
+    local table=$(tee)
+    echo -e "$table" | add_lines "_"
+    echo -e "$table"
+    echo -e "$table" | add_lines "—"
+}
+
+view_columns()
+{
+    tee |sed 's/$/:/'|column -W $1 -E $1 -ts : -o "|" -N $1 | sed -e 's/^/|/'
+}
+
+
+Format_fn() {
+    if [ -p /dev/stdin ];then
+        temp=($(tee))
+        IFS=,;echo "${temp[*]}"
+    else
+        IFS=,; echo "$*"
+    fi
+}
+
+show_menu() {
+    local menu_headline="$;;;;;;;;$1;;;;;;;;"
+    local lines=$(echo -e "$menu_headline" |add_lines '=')
+    echo -e "${LIGHTBLUE}${lines}${ENDCOLOR}"
+    echo -e "${LIGHTBLUE};;;;;;;;${ENDCOLOR}${GREEN}$1${ENDCOLOR}${LIGHTBLUE};;;;;;;;${ENDCOLOR}"
+    echo -e "${LIGHTBLUE}${lines}${ENDCOLOR}"
+    local i=1
+    for option in "${@:2}";do
+        echo -e "$i. ${YELLOW} $option ${ENDCOLOR}"
+        echo -e "${BLUE}----------${ENDCOLOR}"
+        ((++i))
+    done
+    echo -e "${LIGHTBLUE}==========================================${ENDCOLOR}"
+    echo -e "Please enter your choice: "
+}
