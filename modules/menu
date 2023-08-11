@@ -1,0 +1,90 @@
+#!/usr/bin/bash
+show_menu() {
+    #tput sc
+    #tput cup 0 0
+    local menu_headline="$;;;;;;;;$1;;;;;;;;"
+    local lines=$(echo -e "$menu_headline" |add_lines '=')
+    echo -e "${LIGHTBLUE}${lines}${ENDCOLOR}"
+    echo -e "${LIGHTBLUE};;;;;;;;${ENDCOLOR}${GREEN}$1${ENDCOLOR}${LIGHTBLUE};;;;;;;;${ENDCOLOR}"
+    echo -e "${LIGHTBLUE}${lines}${ENDCOLOR}"
+    local i=1
+    echo -e "${GREEN}Select one of the Following options${ENDCOLOR}"
+    echo -e "${BLUE}-----------------------------------${ENDCOLOR}"
+    for option in "${@:2}";do
+        echo -e "$i. ${YELLOW} $option ${ENDCOLOR}"
+        echo -e "${BLUE}----------${ENDCOLOR}"
+        ((++i))
+    done
+    echo -e "${LIGHTBLUE}==========================================${ENDCOLOR}"
+    #tput rc
+}
+DDL_menu() {
+    show_menu "Welcome to our DBMS_BASH" "Create Database" "Drop Database" "Connect to Database" "List Databases" "QUIT"
+    while [ 1 -eq 1 ]; do
+        custom_read -p ">>" && case ${readout,,} in 
+            "1"|"create")
+                bash ../create_database
+            ;;
+            "2"|"drop"|"delete"|"remove")
+                bash ../delete_database
+            ;;
+            "3"|"connect")
+                #source ../connect_to_database
+                cd database1
+                DML_menu
+                cd ..
+                show_menu "Welcome to our DBMS_BASH" "Create Database" "Drop Database" "Connect to Database" "List Databases" "QUIT"
+            ;;
+            "4"|"list"|"ls")
+                ls  --file-type . | grep "/" |tr -d "/" 
+            ;;
+            "5"|"quit"|"exit"})
+                echo GoodBye
+                break
+            ;;
+            *) 
+            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+            ;;
+        esac
+    done
+}
+DML_menu() {
+local DATABASE=$(pwd|sed "s|^.*/||g")
+    show_menu "Welcome To Database $DATABASE" "Create TABLE" "Drop TABLE" "Delete Table" "list Tables" "Insert into table" "Update table" "Truncate Table" "disconnect from database" "exit"
+    while [ 1 -eq 1 ]; do
+        custom_read -p ">>" && case ${readout,,} in 
+            "1"|"create")
+                bash ../../create_table
+            ;;
+            "2"|"drop")
+                echo "dropping"
+            ;;
+            "3"|"delete")
+                bash ../../create_database
+            ;;
+            "4"|"list"|"ls")
+                ls --file-type . | grep -v "/|@"
+            ;;
+            "5"|"insert")
+                bash ../../insert && echo -e "The Data has been inserted ${GREEN}sucessfully${ENDCOLOR}"
+            ;;
+            "6"|"update")
+                echo "Updating"
+            ;;
+            "7"|"truncate")
+                echo "truncating"
+            ;;
+            "8"|"disconnect")
+                echo -e "${MAGENTA}disconnecting${ENDCOLOR}"
+                break
+            ;;
+            "9"|"quit"|"exit"})
+                echo -e "${MAGENTA}GOODBYE${ENDCOLOR}"
+                exit 0
+            ;;
+            *) 
+            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+            ;;
+        esac
+    done
+}

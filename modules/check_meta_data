@@ -8,16 +8,17 @@
 function column_meta_data (){
 
 	#loop to take values for specific number of columns & set the flag to "1"
-	
+	local 
+	column_name=$1
 	flag="1"
 	meta=""
 for (( count=1 ; count<=$1 ; count++ ))
 	do
-	read_c_name $column_num && read_c_datatype $column_num && read_pk $column_num
+	read_c_name $column_name && read_c_datatype $column_name && read_pk $column_name ||return $?
 	done
 	
 		if [[ $flag = "0" ]] ; then
-	echo "you rntered the data sucsessfully"
+	echo "you entered the data sucsessfully"
 	echo "$meta" >> $2
 	else
 	echo "u didnt enter primary key"
@@ -32,8 +33,7 @@ for (( count=1 ; count<=$1 ; count++ ))
 function read_c_name (){	
 								
 	read -p "enter your '$count' column name : " column_name 
-	
-	meta+="$column_name,"
+	[ -n "$column_name" ] && meta+="$column_name," || { echo "column name can't be null"; return 123; }
 	}
 	
 	########################################################################	
@@ -41,20 +41,19 @@ function read_c_name (){
 	# read the column data type
 	
 function read_c_datatype (){
-	 
+
 	read -p "enter your '$count' column data_type :
-	 i_ for integer 
-	 s_ for string 
-	 d_ for date: " column_type
-	 
-	 
+		i_ for integer 
+		t_ for text 
+		d_ for date: " column_type
 	if [[ $column_type = "i" ]] ; then
 		meta+=int,
-		elif [[ $column_type = "s" ]] ; then
-		meta+=string,
+		elif [[ $column_type = "t" ]] ; then
+		meta+=text,
 		elif [[ $column_type = "d" ]] ; then
 		meta+=date,
 		else
+		echo "u didn't enter a right datatype"
 		return 105
 	fi
 	}
@@ -82,7 +81,7 @@ function read_pk (){
 	
 	fi
 
-	echo $meta
+	#echo $meta
 	}
 	###########################################################################
 	

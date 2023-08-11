@@ -36,3 +36,6 @@ select_data() {
     [ -n "${2}" ] && programtext="$(echo NR==${2//,/' || NR=='})"
 	load_column $1 |awk "$programtext"
 }
+get_max_columns_no(){
+    echo -en $1 | sed "s/${COLUMN_DELIMITER}$//"  | awk -F${COLUMN_DELIMITER} "{print NF}"
+}

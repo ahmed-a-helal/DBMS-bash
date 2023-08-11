@@ -8,7 +8,7 @@ custom_read(){
 		
 	read -r "$@" readout
 	
-if [[ $readout =~ [a-zA-Z0-9_[:space:]-]+$ ]] ; then
+if [[ $readout =~ ^[a-zA-Z0-9_[:space:]-]*$ ]] ; then
 
 	set +o noglob
 

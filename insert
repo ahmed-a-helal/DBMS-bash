@@ -1,8 +1,32 @@
 #! /usr/bin/bash
-TABLE=data/database1/table1
-declare -a TABLE_DATA=( "hunga asdasasdfl;;alksdn;asdnklasndl" "50" "" )
-source ./modules/querytable
-source ./modules/checks
+#TABLE=data/database1/table1
+#declare -a TABLE_DATA=( "hunga asdasasdfl;;alksdn;asdnklasndl" "50" "" )
+source $(dirname $0)/modules/querytable
+source $(dirname $0)/modules/checks
+source $(dirname $0)/modules/check_meta_data 
+source $(dirname $0)/modules/checks 
+source $(dirname $0)/modules/colorcodes 
+source $(dirname $0)/modules/custom_read 
+source $(dirname $0)/modules/formats 
+source $(dirname $0)/modules/menu 
+source $(dirname $0)/modules/querytable 
+source $(dirname $0)/modules/where
+
+insert_data_reading(){
+    custom_read -p "Please enter the Table name : " || return $?
+    chk_table_name $readout || return $?
+    TABLE=$readout 
+    METADATA=$(load_metadata)
+    PKCOLUMN=$(getprimarykeycolumn "$METADATA")
+    declare -ag TABLE_DATA
+    for COLUMN_NO in $(seq $(get_max_columns_no $METADATA));do
+        declare -ga COLUMN_INFO=($( load_column_info "$METADATA" "$COLUMN_NO" ))
+        echo -en "column name ${MAGENTA}${COLUMN_INFO[0]}${ENDCOLOR} with datatype ${MAGENTA}${COLUMN_INFO[1]}${ENDCOLOR} "
+        [ $PKCOLUMN -eq $COLUMN_NO ] && echo -e "and must be ${MAGENTA}UNIQUE${ENDCOLOR}" || echo 
+        custom_read -p "enter your value : " && TABLE_DATA+=("$readout") || return $?
+        ((++COLUMN_NO))
+    done
+}
 
 insert() {
 : '
@@ -11,10 +35,11 @@ insert() {
 	then checks the data to follow the constraints 
 	then writes it into the table file using specific delimiter
 '
-	if ( chk_table );then
-		IFS=$COLUMN_DELIMITER; echo "${TABLE_DATA[*]}" >> "$TABLE" && return 0
+	# echo $TABLE "${TABLE_DATA[*]}"
+	if ( chk_table_columns );then
+		IFS=$COLUMN_DELIMITER; echo -ne "\n${TABLE_DATA[*]}" >> "$TABLE"
 	else
-		return $?
+		exit $?
 	fi
 }
-insert 
+insert_data_reading && insert 

@@ -5,4 +5,5 @@ GREEN='\e[0;32m'
 YELLOW='\e[0;33m'
 BLUE='\e[0;34m'
 LIGHTBLUE='\e[1;34m'
+MAGENTA='\e[0;35m'
 ENDCOLOR='\e[0m' # No Color

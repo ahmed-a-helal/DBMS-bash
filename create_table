@@ -1,0 +1,38 @@
+#! /bin/bash
+
+# source the custom_read function
+source $(dirname $0)/modules/check_meta_data
+source $(dirname $0)/modules/custom_read
+
+# run the function to read the table name to create
+
+# check if the file is exist return error msg or go and create the table
+
+function check_and_create_table() {
+
+	
+	if [[ -f "$1" ]] ; then
+	
+		echo "this table already exist"
+		return 126
+		
+	elif [[ $1 =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] ; then
+		return 0
+	else
+	
+		echo " be serious enter a valid name ^-^ "
+		return 125
+	
+	fi
+}
+#when the user successfully created the table run this function to asign his columns
+custom_read -p "enter the table name : " &&\
+	check_and_create_table $readout && tablename=$readout &&\
+	custom_read -p "enter the number of columns to your table : " &&\
+	column_meta_data $readout $tablename
+#when the user successfully created the table run this function to asign his columns
+
+#read -p "enter the number of columns to your table : " column_num
+
+#column_meta_data $column_num $readout
+

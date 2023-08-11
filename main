@@ -1,0 +1,15 @@
+#! /usr/bin/bash
+source modules/check_meta_data 
+source modules/checks 
+source modules/colorcodes 
+source modules/custom_read 
+source modules/formats 
+source modules/menu 
+source modules/querytable 
+source modules/where
+[ -d data ] || mkdir data 
+cd data/
+clear
+#tput cup 30 0
+
+DDL_menu
