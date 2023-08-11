@@ -1,0 +1,12 @@
+#!/bin/bash
+read -p "enter database name`echo $'\n> '`" db
+db=data/$db
+connect_database(){
+
+	if [ -d "$1" ] ; then
+		cd "$1"
+	else
+		printf "this name dosent exist .. sorry\n"
+		fi
+}
+connect_database $db
