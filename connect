@@ -1,12 +1,16 @@
 #!/bin/bash
-read -p "enter database name`echo $'\n> '`" db
-db=data/$db
+pwd
+source ../modules/custom_read
+source ../modules/colorcodes
+custom_read -p "enter database name`echo $'\n> '`"
+db=$readout
 connect_database(){
 
 	if [ -d "$1" ] ; then
 		cd "$1"
 	else
-		printf "this name dosent exist .. sorry\n"
+		printf "${RED}this name dosent exist .. sorry\n${ENDCOLOR}"
+		exit 99
 		fi
 }
 connect_database $db
