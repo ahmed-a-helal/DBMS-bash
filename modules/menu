@@ -79,7 +79,7 @@ local DATABASE=$(pwd|sed "s|^.*/||g")
                 echo -e "${MAGENTA}disconnecting${ENDCOLOR}"
                 break
             ;;
-            "9"|quit})
+            "9"|"quit"|"exit")
                 echo -e "${MAGENTA}GOODBYE${ENDCOLOR}"
                 exit 0
             ;;

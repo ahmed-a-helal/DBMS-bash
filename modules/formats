@@ -32,3 +32,11 @@ view_columns()
 }
 
 
+Format_fn() {
+    if [ -p /dev/stdin ];then
+        temp=($(tee))
+        IFS=,;echo "${temp[*]}"
+    else
+        IFS=,; echo "$*"
+    fi
+}
