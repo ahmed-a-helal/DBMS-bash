@@ -47,6 +47,9 @@ increment_fn() {
     if [ -p /dev/stdin ];then
         tee | sed "s/$/+1/"  | bc
     else
-        echo -n $@| tr " " "\n" | sed "s/$/+1/"  | bc
+        echo -en $@| tr " " "\n" | sed "s/$/+1/"  | bc
     fi
+}
+Get_column_number_from_name(){
+    tee|tr ":" "\n" |sed 's/,.*//g' |grep -n "$1"|cut -d: -f 1
 }

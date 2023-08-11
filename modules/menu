@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 show_menu() {
-    #tput sc
-    #tput cup 0 0
     local menu_headline="$;;;;;;;;$1;;;;;;;;"
     local lines=$(echo -e "$menu_headline" |add_lines '=')
     echo -e "${LIGHTBLUE}${lines}${ENDCOLOR}"
@@ -16,8 +14,107 @@ show_menu() {
         ((++i))
     done
     echo -e "${LIGHTBLUE}==========================================${ENDCOLOR}"
-    #tput rc
 }
+
+where_menu() {
+    METADATA=$(load_metadata)
+    echo "which column u want to apply where clause upon"
+    echo -en "${Magenta} input enter or invalid column number to skip where clause {ENDCOLOR}"
+    custom_read -p "which column u want to apply where clause upon "
+    if [[ $readout =~ ^[:digit:]+& ]] && [ $readout -le $(echo $METADATA |get_max_columns_no ) ];then
+        COLUMN_NO=$readout
+    elif [ -n "$readout" ];then
+        COLUMN_NO=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
+    else 
+        return 0
+    fi
+    if [ -n "$COLUMN_NO" ];then
+    declare -ga COLUMN_INFO=($( load_column_info $METADATA $COLUMN_NO ))
+        case ${COLUMN_INFO[1]} in
+        "date"|"int")
+            show_menu "select the condition u want to apply" "1) \">\" greater than" \
+                "2) \"<\" less than" "3) \"==\" equal" "4) \">=\" greater than or equal"\
+                "5) \"<=\" less than or equal"
+                custom_read -p ">>"
+                case $readout in
+                1)
+                    CONDITION=">"
+                    return 0
+                ;;
+                2)
+                    CONDITION="<"
+                    return 0
+                ;;
+                3)
+                    CONDITION="=="
+                    return 0
+                ;;
+                4)
+                    CONDITION=">="
+                    return 0
+                ;;
+                5)
+                    CONDITION="<="
+                    return 0
+                ;;
+                *)
+                    echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                    return 79
+                ;;
+                esac
+        "text")
+            show_menu "select the condition u want to apply" "1) exact match" "2) fuzzy match" \
+                "3) exact match and case incensitive" "4) fuzzy match and case incensitive"\
+                "5) exact invert match" "6) fuzzy invert match" \
+                "7) exact invert match and case incensitive" "6) fuzzy invert match and case incensitive"
+                custom_read -p ">>"
+                case $readout in
+                1)
+                    CONDITION="-x"
+                    return 0
+                ;;
+                2)
+                    CONDITION="-e"
+                    return 0
+                ;;
+                3)
+                    CONDITION="-ix"
+                    return 0
+                ;;
+                4)
+                    CONDITION="-ie"
+                    return 0
+                ;;
+                5)
+                    CONDITION="-vx"
+                    return 0
+                ;;
+                6)
+                    CONDITION="-ve"
+                    return 0
+                ;;
+                7)
+                    CONDITION="-vix"
+                    return 0
+                ;;
+                8)
+                    CONDITION="-vie"
+                    return 0
+                ;;
+                *)
+                    echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                    return 79
+                ;;
+                esac
+
+        ;;
+        esac
+
+    fi
+    show_menu "select which condition" "Create Database" "Drop Database" "Connect to Database" "List Databases" "QUIT"
+
+}
+
 DDL_menu() {
     show_menu "Welcome to our DBMS_BASH" "Create Database" "Drop Database" "Connect to Database" "List Databases" "QUIT"
     while [ 1 -eq 1 ]; do

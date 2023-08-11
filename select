@@ -5,10 +5,10 @@ source $(dirname $0)/modules/where
 source $(dirname $0)/modules/formats
 
 
-TABLE=data/database1/table1
+TABLE=data/database1/test1
 COLUMN_NO=1
 CONDITION=""
-INPUT=''
+INPUT='whatever'
 declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
 #where_fn $COLUMN_NO $CONDITION $INPUT
 
@@ -19,6 +19,7 @@ select_fn() {
     local ROWSNUMBER
     ROWSNUMBER=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
     RC1=$?
+    #increment_fn 
     [[ 0 -eq $RC1 ]] && ROWSNUMBER=$(Format_fn $ROWSNUMBER) || { echo $ROWSNUMBER;  return $RC1; }
     select_data $1 $ROWSNUMBER | view_table $(load_metadata | get_columns_names $1) || return $?
 }
