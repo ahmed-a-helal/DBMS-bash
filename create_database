@@ -1,5 +1,7 @@
 #! /bin/bash
 source $(dirname $0)/modules/custom_read
+source $(dirname $0)/modules/colorcodes
+
 function check_and_create() {
 	custom_read -p "enter database name : " || return $?
 	if [[ -d "$readout" ]] ; then

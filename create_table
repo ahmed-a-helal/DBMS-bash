@@ -3,6 +3,7 @@
 # source the custom_read function
 source $(dirname $0)/modules/check_meta_data
 source $(dirname $0)/modules/custom_read
+source $(dirname $0)/modules/colorcodes
 
 # run the function to read the table name to create
 

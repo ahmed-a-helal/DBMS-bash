@@ -2,14 +2,11 @@
 #TABLE=data/database1/table1
 #declare -a TABLE_DATA=( "hunga asdasasdfl;;alksdn;asdnklasndl" "50" "" )
 source $(dirname $0)/modules/querytable
-source $(dirname $0)/modules/checks
-source $(dirname $0)/modules/check_meta_data 
 source $(dirname $0)/modules/checks 
 source $(dirname $0)/modules/colorcodes 
 source $(dirname $0)/modules/custom_read 
 source $(dirname $0)/modules/formats 
 source $(dirname $0)/modules/menu 
-source $(dirname $0)/modules/querytable 
 source $(dirname $0)/modules/where
 
 insert_data_reading(){
