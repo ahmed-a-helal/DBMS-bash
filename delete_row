@@ -1,0 +1,35 @@
+#!/bin/bash
+TABLE="table"
+source modules/querytable
+source modules/checks
+source modules/where
+COLUMN_NO=1
+CONDITION=""
+target_value='magd'
+declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
+
+
+Get_Rows() { 
+
+      local RowsOfCondition
+      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$target_value")
+      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn)
+
+
+    }
+
+
+delete_row() {
+    local row_number=$1
+    local filename=$2
+
+    # Delete the specified row using sed
+    sed -i "${row_number}d" "${filename}"
+
+    echo "Row ${row_number} deleted from ${filename}."
+}
+
+# Example usage: delete row 3 from table.txt
+Get_Rows
+
+delete_row "$variable" "$TABLE"

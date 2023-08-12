@@ -1,12 +1,12 @@
 #!/bin/bash
 
-TABLE=mkarios
+TABLE="table"
 source modules/querytable
 source modules/checks
 source modules/where
 COLUMN_NO=1
 CONDITION=""
-target_value=''
+target_value='magd'
 declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
 
 function update_table {
@@ -37,10 +37,10 @@ Get_Rows() {
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$target_value")
       [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
 
-      #increment_fn "$RowsOfCondition"
+
     }
     
    
 Get_Rows
-update_table mkarios "$variable" 2 '69'	
+update_table $TABLE "$variable" 2 '69'	
 
