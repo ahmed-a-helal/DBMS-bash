@@ -16,7 +16,7 @@ function check_and_create_table() {
 		echo "this table already exist"
 		return 126
 		
-	elif [[ $1 =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] ; then
+	elif [[ $1 =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] && [ "$(echo $1 | wc -c)" -le 63 ] ; then
 		return 0
 	else
 	
