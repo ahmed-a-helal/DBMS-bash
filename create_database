@@ -6,18 +6,18 @@ function check_and_create() {
 	custom_read -p "enter database name : " || return $?
 	if [[ -d "$readout" ]] ; then
 	
-		echo "this database already exist"
+		echo -e "${RED}this database already exist${ENDCOLOR}"
 		return 123
 		
 	elif [[ $readout =~ ^[a-zA-Z][a-zA-Z0-9_]*$ ]] && [ "$(echo $readout|wc -c)" -le 63 ] ; then
 	
 		create_database "$readout"
 		
-		echo "Database $readout has been created successfully"
+		echo -e "${GREEN}Database $readout has been created successfully${ENDCOLOR}"
 		return 0
 
 	else
-		echo "This Database Name is not valid "
+		echo -e "${RED}This Database Name is not valid${ENDCOLOR} "
         return 122
 	
 	fi

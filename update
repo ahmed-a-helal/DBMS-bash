@@ -36,11 +36,8 @@ Get_Rows() {
       local RowsOfCondition
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$target_value")
       [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
-
-
     }
-    
-   
+
 Get_Rows
 update_table $TABLE "$variable" 2 '69'	
 

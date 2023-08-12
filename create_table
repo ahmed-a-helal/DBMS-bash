@@ -14,14 +14,14 @@ function check_and_create_table() {
 	
 	if [[ -f "$1" ]] ; then
 	
-		echo "this table already exist"
+		echo -e "${RED}this table already exist${ENDCOLOR}"
 		return 126
 		
 	elif [[ $1 =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] && [ "$(echo $1 | wc -c)" -le 63 ] ; then
 		return 0
 	else
 	
-		echo " This Table Name is not valid "
+		echo -e "${RED}This Table Name is not valid${ENDCOLOR}"
 		return 125
 	
 	fi

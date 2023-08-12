@@ -9,7 +9,7 @@ connect_database(){
 	if [ -d "$1" ] ; then
 		cd "$1"
 	else
-		printf "${RED}this name dosent exist .. sorry\n${ENDCOLOR}"
+		echo -e "${RED}this name dosent exist .. sorry${ENDCOLOR}"
 		return 99
 		fi
 }

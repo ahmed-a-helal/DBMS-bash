@@ -29,7 +29,7 @@ select_data_entry() {
             return 143
         fi
     done
-    [ -z "${SELECT_COLUMN_NO_temp[@]}" ] && SELECT_COLUMN_NO=$(echo ${SELECT_COLUMN_NO_temp[@]}|tr " " "\n"|sort|uniq|Format_fn)
+    [ -n "${SELECT_COLUMN_NO_temp}" ] && SELECT_COLUMN_NO=$(echo ${SELECT_COLUMN_NO_temp[@]}|tr " " "\n"|sort|uniq|Format_fn)
 }
 
 select_fn() {
