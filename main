@@ -59,6 +59,8 @@ local DATABASE=$(pwd|sed "s|^.*/||g")
             ;;
             "4"|"select"|"ls")
                 bash ../../select
+                show_menu "Welcome To Database $DATABASE" "Create TABLE" "Drop TABLE" "Delete Table" "Select" "list Tables" "Insert into table" "Update table" "Truncate Table" "disconnect from database" "quit"
+
             ;;
             "5"|"list"|"ls")
                 ls --file-type . | grep -v "/|@"
