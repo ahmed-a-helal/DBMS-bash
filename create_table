@@ -20,7 +20,7 @@ function check_and_create_table() {
 		return 0
 	else
 	
-		echo " be serious enter a valid name ^-^ "
+		echo " This Table Name is not valid "
 		return 125
 	
 	fi

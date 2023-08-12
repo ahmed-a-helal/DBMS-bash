@@ -15,7 +15,7 @@ function check_and_create() {
 		return 0
 
 	else
-		echo " be serious enter a valid name ^-^ "
+		echo "This Database Name is not valid "
         return 122
 	
 	fi

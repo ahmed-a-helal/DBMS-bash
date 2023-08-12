@@ -16,7 +16,7 @@ if [[ $readout =~ ^[a-zA-Z0-9_[:space:].@-]*$ ]] ; then
 	
 else
 
-	echo -e "${RED} your input is not valid be serious${ENDCOLOR} "
+	echo -e "${RED}ُThis DBMS doesn't support the use of special charachter${ENDCOLOR} "
 			
 	return 102
 		

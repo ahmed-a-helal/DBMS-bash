@@ -38,7 +38,7 @@ DDL_menu() {
                 break
             ;;
             *) 
-            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+            echo -e "${RED}Please enter a correct menu input (name or number)${ENDCOLOR}"
             ;;
         esac
     done
@@ -78,12 +78,12 @@ local DATABASE=$(pwd|sed "s|^.*/||g")
                 echo -e "${MAGENTA}disconnecting${ENDCOLOR}"
                 break
             ;;
-            "0"|"quit"|"exit")
+            "0"|"10"|"quit"|"exit")
                 echo -e "${MAGENTA}GOODBYE${ENDCOLOR}"
                 exit 0
             ;;
             *) 
-            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+            echo -e "${RED}Please enter a correct menu input (name or number)${ENDCOLOR}"
             ;;
         esac
     done

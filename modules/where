@@ -97,7 +97,7 @@ where_menu() {
                             CONDITION="<="
                         ;;
                         *)
-                            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                            echo -e "${RED}Please enter a correct menu input${ENDCOLOR}"
                             return 79
                         ;;
                     esac
@@ -134,7 +134,7 @@ where_menu() {
                             CONDITION="-vie"
                         ;;
                         *)
-                            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                            echo -e "${RED}Please enter a correct menu input${ENDCOLOR}"
                             return 79
                         ;;
                     esac
