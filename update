@@ -1,0 +1,46 @@
+#!/bin/bash
+
+TABLE=mkarios
+source modules/querytable
+source modules/checks
+source modules/where
+COLUMN_NO=1
+CONDITION=""
+target_value=''
+declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
+
+function update_table {
+    local input_file="$1"
+    local condition="$2"
+    local column="$3"
+    local new_value="$4"
+    local temp_file=$(mktemp)
+    code="$condition { \$$column=\"$new_value\"}{ print }"
+    awk -F':' -v OFS=':'  "$code" "$input_file" > "$temp_file"
+    mv "$temp_file" "$input_file"
+}
+
+#update_table file "NR==1||NR==2||NR==5" 3 'gaed'
+
+function condition_format() 
+	{ 
+		local variable=$( tee | sed "s/^/NR==/g" )
+		echo ${variable[*]} | sed "s/ / || /g"
+	}
+#echo -ne "1\n2\n3\n4" | condition_format
+
+
+
+Get_Rows() { 
+
+      local RowsOfCondition
+      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$target_value")
+      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
+
+      #increment_fn "$RowsOfCondition"
+    }
+    
+   
+Get_Rows
+update_table mkarios "$variable" 2 '69'	
+
