@@ -16,16 +16,20 @@ select_data_entry() {
     chk_table_name $readout || return $?
     TABLE=$readout 
     METADATA=$(load_metadata)
-    echo "which columns u select, enter their names or numbers"
+    echo "which columns u select, enter their names or numbers with spaces"
     custom_read -p ">>" || return $?
-    if ( [[ $readout =~ ^[1-9][0-9]*$ ]] && [ $readout -le $(get_max_columns_no $METADATA ) ] ); then
-        SELECT_COLUMN_NO=$readout
-    elif [[ $readout =~ ^[_a-z] ]];then
-        SELECT_COLUMN_NO=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
-        echo $SELECT_COLUMN_NO
-    else
-        return 143
-    fi
+    declare -a SELECT_COLUMN_NO_temp
+    for i in $readout;do
+        if ( [[ $i =~ ^[1-9][0-9]*$ ]] && [ $i -le $(get_max_columns_no $METADATA ) ] ); then
+            SELECT_COLUMN_NO_temp+=($i)
+        elif [[ $readout =~ ^[_a-z] ]];then
+            SELECT_COLUMN_NO_temp+=($(echo -n "$METADATA" | Get_column_number_from_name $i))
+        else
+            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+            return 143
+        fi
+    done
+    [ -z "${SELECT_COLUMN_NO_temp[@]}" ] && SELECT_COLUMN_NO=$(echo ${SELECT_COLUMN_NO_temp[@]}|tr " " "\n"|sort|uniq|Format_fn)
 }
 
 select_fn() {
@@ -36,7 +40,7 @@ select_fn() {
     select_data $SELECT_COLUMN_NO $ROWSNUMBER | view_table $(load_metadata | get_columns_names $SELECT_COLUMN_NO) || return $?
 }
 
-select_data_entry &&   where_menu && SELECT_COLUMN_NO=$SELECT_COLUMN_NO select_fn 
+select_data_entry &&  where_menu &&  select_fn 
 
 
 

@@ -8,7 +8,7 @@ custom_read(){
 		
 	read -r "$@" readout
 	
-if [[ $readout =~ ^[a-zA-Z0-9_[:space:]-]*$ ]] ; then
+if [[ $readout =~ ^[a-zA-Z0-9_[:space:].@-]*$ ]] ; then
 
 	set +o noglob
 
@@ -16,7 +16,7 @@ if [[ $readout =~ ^[a-zA-Z0-9_[:space:]-]*$ ]] ; then
 	
 else
 
-	echo " your input is not valid be serious "
+	echo -e "${RED} your input is not valid be serious${ENDCOLOR} "
 			
 	return 102
 		

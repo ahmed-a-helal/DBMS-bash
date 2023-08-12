@@ -1,8 +1,8 @@
 #!/bin/bash
-pwd
+
 source ../modules/custom_read
 source ../modules/colorcodes
-custom_read -p "enter database name`echo $'\n> '`"
+custom_read -p "enter database name`echo $'\n> '`" || return $?
 db=$readout
 connect_database(){
 
@@ -10,7 +10,7 @@ connect_database(){
 		cd "$1"
 	else
 		printf "${RED}this name dosent exist .. sorry\n${ENDCOLOR}"
-		exit 99
+		return 99
 		fi
 }
 connect_database $db
