@@ -17,8 +17,7 @@ where_fn() {
             chk_datatype ${COLUMN_INFO[1]} ${@: -1} && TextWhereOperation "$@" ||return $?
         ;;
         *)
-            echo please input right datatype
-            return 30
+            allrows
     esac
 
 }
@@ -38,6 +37,11 @@ IntWhereOperation() {
         | sed -e "s/$/ $2 $3/" | bc \
         | grep -n '1$' |cut -d: -f 1 
 }
+allrows() {
+   tail -n +2 $TABLE | awk '{print NR}'
+}
+
+
 increment_fn() {
     : '
     this function takes inputs as stdinput or normal int inputs 
@@ -50,6 +54,98 @@ increment_fn() {
         echo -en $@| tr " " "\n" | sed "s/$/+1/"  | bc
     fi
 }
-Get_column_number_from_name(){
-    tee|tr ":" "\n" |sed 's/,.*//g' |grep -n "$1"|cut -d: -f 1
+
+where_menu() {
+    echo "which column u want to apply where clause upon"
+    echo -e "${MAGENTA}input enter or invalid column number to skip where clause${ENDCOLOR}"
+    custom_read -p ">>" || return $?
+    if [ -z "$readout" ];then
+        return 0
+    elif ( [[ $readout =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
+        echo 1
+        COLUMN_NO=$readout
+    elif [[ $readout =~ ^[_a-z] ]];then
+        echo 2
+        COLUMN_NO=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
+    else
+        echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+        return 555
+
+    fi
+    if [ -n "$COLUMN_NO" ];then
+        declare -ga COLUMN_INFO=($( load_column_info $METADATA $COLUMN_NO ))
+        case ${COLUMN_INFO[1]} in
+            date|int)
+                show_menu "select the condition u want to apply" "\">\" greater than" \
+                    "\"<\" less than" "\"==\" equal" "\">=\" greater than or equal"\
+                    "\"<=\" less than or equal"
+                    custom_read -p ">>" || return $?
+                    case $readout in
+                        1)
+                            CONDITION=">"
+                        ;;
+                        2)
+                            CONDITION="<"
+                        ;;
+                        3)
+                            CONDITION="=="
+                        ;;
+                        4)
+                            CONDITION=">="
+                        ;;
+                        5)
+                            CONDITION="<="
+                        ;;
+                        *)
+                            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                            return 79
+                        ;;
+                    esac
+            ;;
+            "text")
+                show_menu "select the condition u want to apply" "exact match" "fuzzy match" \
+                    "exact match and case incensitive" "fuzzy match and case incensitive"\
+                    "exact invert match" "fuzzy invert match" \
+                    "exact invert match and case incensitive" "fuzzy invert match and case incensitive"
+                    custom_read -p ">>"
+                    case $readout in
+                        1)
+                            CONDITION="-x"
+                        ;;
+                        2)
+                            CONDITION="-e"
+                        ;;
+                        3)
+                            CONDITION="-ix"
+                        ;;
+                        4)
+                            CONDITION="-ie"
+                        ;;
+                        5)
+                            CONDITION="-vx"
+                        ;;
+                        6)
+                            CONDITION="-ve"
+                        ;;
+                        7)
+                            CONDITION="-vix"
+                        ;;
+                        8)
+                            CONDITION="-vie"
+                        ;;
+                        *)
+                            echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+                            return 79
+                        ;;
+                    esac
+
+            ;;
+            *)
+                echo -e "${RED}Table datatype header is faulty${ENDCOLOR}"
+            ;;
+        esac
+    custom_read -p "insert the input of the condition " ||return $?
+    INPUT=$readout
+    return 0
+    fi
 }

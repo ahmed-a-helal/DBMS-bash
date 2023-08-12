@@ -37,7 +37,7 @@ select_data() {
 	load_column $1 |awk "$programtext"
 }
 get_max_columns_no(){
-    echo -en $1 | sed "s/${COLUMN_DELIMITER}$//"  | awk -F${COLUMN_DELIMITER} "{print NF}"
+    echo -en $1 | sed "s/${COLUMN_DELIMITER}$//"  | awk -F${COLUMN_DELIMITER} '{print NF}'
 }
 Get_column_number_from_name(){
     tee|tr ":" "\n" |sed 's/,.*//g' |grep -n "$1"|cut -d: -f 1
