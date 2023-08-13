@@ -1,14 +1,100 @@
 #!/bin/bash
 
-TABLE="table"
-source modules/querytable
-source modules/checks
-source modules/where
-COLUMN_NO=1
-CONDITION=""
-target_value='magd'
-declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
+source $(dirname $0)/modules/querytable
+source $(dirname $0)/modules/checks
+source $(dirname $0)/modules/where
+source $(dirname $0)/modules/formats
+source $(dirname $0)/modules/colorcodes
+source $(dirname $0)/modules/custom_read
+source $(dirname $0)/modules/menu
 
+
+function gathering(){
+#getting table name and target column to update and its new value
+
+custom_read -p "Please enter the Table name : " || return $?
+TABLE=$readout
+chk_table_name $readout || return $?
+
+declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
+METADATA=$(load_metadata)
+
+    echo "which column u want to update"
+    custom_read -p ">>" || return $?
+    if [ -z "$readout" ];then
+        return 0
+    elif ( [[ $readout =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
+        echo 1
+        update_me=$readout
+    elif [[ $readout =~ ^[_a-z] ]];then
+        echo 2
+        update_me=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
+    else
+        echo -e "${RED}Please enter a correct input${ENDCOLOR}"
+        return 555
+
+    fi
+    
+    custom_read -p "insert the new value " ||return $?
+    new_value=$readout
+    
+    # Check if updating primary key column
+    if [ "${COLUMN_INFO[2]}" == "pk" ]; then
+        # Get current values of primary key column
+        primary_key_values=$(awk -F':' 'BEGIN {OFS=":"} NR>1 {print $'"${COLUMN_NO}"'}' "$TABLE")
+        
+        # Check if new value already exists in primary key column
+       
+        if echo "$primary_key_values" | grep -q "^$new_value$"; then
+          
+            echo -e "${RED}sorry but Value already exists in primary key column${ENDCOLOR}"
+           
+            return 1
+        fi
+    fi
+    
+    
+    
+    return 0
+    
+        case ${COLUMN_INFO[1]} in
+        "int")
+            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
+        ;;
+        "date")
+            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
+        ;;
+        "text")
+            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
+        ;;
+        *)
+            echo "sorry wrong data type"
+            return 198
+    esac
+
+}
+
+
+
+#update_table file "NR==1||NR==2||NR==5" 3 'gaed'
+
+function condition_format() 
+	{ 
+		local variable=$( tee | sed "s/^/NR==/g" )
+		echo ${variable[*]} | sed "s/ /||/g"
+	}
+
+
+
+
+Get_Rows() { 
+
+      local RowsOfCondition
+      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
+      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
+
+    }
+    
 function update_table {
     local input_file="$1"
     local condition="$2"
@@ -18,26 +104,11 @@ function update_table {
     code="$condition { \$$column=\"$new_value\"}{ print }"
     awk -F':' -v OFS=':'  "$code" "$input_file" > "$temp_file"
     mv "$temp_file" "$input_file"
+    
+    echo "your columns successfully updated"
 }
+    
+   
+gathering && Get_Rows && where_menu && update_table $TABLE $variable $update_me "$new_value"	
 
-#update_table file "NR==1||NR==2||NR==5" 3 'gaed'
-
-function condition_format() 
-	{ 
-		local variable=$( tee | sed "s/^/NR==/g" )
-		echo ${variable[*]} | sed "s/ / || /g"
-	}
-#echo -ne "1\n2\n3\n4" | condition_format
-
-
-
-Get_Rows() { 
-
-      local RowsOfCondition
-      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$target_value")
-      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
-    }
-
-Get_Rows
-update_table $TABLE "$variable" 2 '69'	
 

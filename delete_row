@@ -7,9 +7,6 @@ source $(dirname $0)/modules/formats
 source $(dirname $0)/modules/colorcodes
 source $(dirname $0)/modules/custom_read
 source $(dirname $0)/modules/menu
-#COLUMN_NO=1
-#CONDITION=""
-#target_value='magd'
 
 
 function gathering(){
@@ -26,19 +23,20 @@ get_rows(){
 	local RowsOfCondition
 	
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
-      
-      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn)
+      RowsOfCondition=$(echo "$RowsOfCondition" | tr '\n' ' ')
+      local RC=$? 
+      [ $RC -eq 0 ] && [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn) || { echo $RowsOfCondition; return $RC; }
+      echo $RowsOfCondition
 }
 
 delete_row() {
      
-      local row_number=$1
-      
-      local filename=$2
+      declare -a row_number="${@:1:$#-1}"
+      local filename=${@: -1}
    	
     # Delete the specified row using sed
 
-    sed -i "${row_number}d" "${filename}"
+    [ -n "$row_number" ] && sed -i "${row_number// /d;}d" "${filename}"
 
     echo "Row ${row_number} deleted from ${filename}."
 
