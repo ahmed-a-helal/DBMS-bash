@@ -36,12 +36,9 @@ METADATA=$(load_metadata)
     
     elif ( [[ "$update_me" =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
 
-        echo 1
 
 
     elif [[ "$update_me" =~ ^[_a-z] ]];then
-
-        echo 2
 
         update_me=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
 
@@ -78,8 +75,8 @@ declare COLUMN_INFO=($( load_column_info $(load_metadata) "$update_me" ))
     if [ "${COLUMN_INFO[2]}" == "pk" ]; then
       
         # Get current values of primary key column
-      
-        primary_key_values=$(awk -F':' 'BEGIN {OFS=":"} NR>1 {print $'"${COLUMN_NO}"'}' "$TABLE")
+        primary_key_values=$(awk -F':' -v OFS=':' "NR>1 {print \$${update_me}}" "$TABLE")
+        
         
         # Check if new value already exists in primary key column
        
@@ -117,7 +114,7 @@ Get_Rows() {
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
 
       local RC=$? 
-      [ $RC -eq 0 ] && echo "hi" && [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format) || { echo $RowsOfCondition; return $RC; }
+      [ $RC -eq 0 ] && [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format) || { echo $RowsOfCondition; return $RC; }
 
     }
     

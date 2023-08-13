@@ -52,10 +52,10 @@ local DATABASE=$(pwd|sed "s|^.*/||g")
                 bash ../../create_table
             ;;
             "2"|"drop")
-                echo "dropping"
+                bash ../../drop_table
             ;;
             "3"|"delete")
-                echo deleting
+                bash ../../delete_row
             ;;
             "4"|"select"|"ls")
                 bash ../../select
@@ -67,10 +67,10 @@ local DATABASE=$(pwd|sed "s|^.*/||g")
                 bash ../../insert && echo -e "The Data has been inserted ${GREEN}sucessfully${ENDCOLOR}"
             ;;
             "7"|"update")
-                echo "Updating"
+                bash ../../update
             ;;
             "8"|"truncate")
-                echo "truncating"
+                echo "not emplemented yet"
             ;;
             "9"|"disconnect")
                 echo -e "${MAGENTA}disconnecting${ENDCOLOR}"

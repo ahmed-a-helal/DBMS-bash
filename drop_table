@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source $(dirname $0)/modules/custom_read
+source $(dirname $0)/modules/colorcodes
+#take the input to check if its exist to delete or not exist
+
+
+# function to delete data_base if its exist :
+
+function drop_table() {
+	#if the file id esist :	
+	
+	if [[ -f $1 ]]; then
+		rm -rf $1 &&\
+		echo -e "${GREEN}table: $1 has been deleted successfully${ENDCOLOR}"
+	else 
+		#if there is no directory return error code :
+		echo -e "${RED}there is no table exist with this name${ENDCOLOR}"
+		return 101
+	fi
+}
+
+custom_read -p "enter the table name : " && drop_table $readout 

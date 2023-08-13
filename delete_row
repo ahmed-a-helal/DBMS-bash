@@ -22,10 +22,8 @@ METADATA=$(load_metadata)
 get_target_rows(){
       variable={}
       local RowsOfCondition
-      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
-			variable=$(echo "$RowsOfCondition" | increment_fn | tr '\n' ' ')
-     echo $RowsOfCondition
-     echo $variable
+      RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT") || { echo $RowsOfCondition ; return $?; }
+      variable=$(echo "$RowsOfCondition" | increment_fn | tr '\n' ' ')
 }
 
 delete_row() {
@@ -37,7 +35,7 @@ delete_row() {
 
     [ -n "$row_number" ] && sed -i "${row_number// /d;}d" "${filename}"
 
-    echo "Row ${row_number} deleted from ${filename}."
+    echo "you rows have been deleted from : ${filename}."
 
 }
 
