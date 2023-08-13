@@ -147,5 +147,9 @@ where_menu() {
     custom_read -p "insert the input of the condition " ||return $?
     INPUT=$readout
     return 0
+    else
+    	echo "enter a valid column name or number please:"
+	return 277
+    
     fi
 }

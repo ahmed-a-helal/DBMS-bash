@@ -19,14 +19,13 @@ TABLE=$readout
 METADATA=$(load_metadata)
 
 }
-get_rows(){
-	local RowsOfCondition
-	
+get_target_rows(){
+      variable={}
+      local RowsOfCondition
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
-      RowsOfCondition=$(echo "$RowsOfCondition" | tr '\n' ' ')
-      local RC=$? 
-      [ $RC -eq 0 ] && [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn) || { echo $RowsOfCondition; return $RC; }
-      echo $RowsOfCondition
+			variable=$(echo "$RowsOfCondition" | increment_fn | tr '\n' ' ')
+     echo $RowsOfCondition
+     echo $variable
 }
 
 delete_row() {
@@ -43,4 +42,4 @@ delete_row() {
 }
 
 # Example usage: delete row 3 from tabl
-gathering && where_menu && get_rows && delete_row $variable $TABLE
+gathering && where_menu && get_target_rows && delete_row $variable $TABLE

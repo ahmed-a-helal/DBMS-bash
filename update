@@ -7,40 +7,78 @@ source $(dirname $0)/modules/formats
 source $(dirname $0)/modules/colorcodes
 source $(dirname $0)/modules/custom_read
 source $(dirname $0)/modules/menu
-
-
+update_me=""
 function gathering(){
 #getting table name and target column to update and its new value
 
 custom_read -p "Please enter the Table name : " || return $?
-TABLE=$readout
+
 chk_table_name $readout || return $?
 
-declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
-METADATA=$(load_metadata)
+TABLE=$readout
+
+#declare COLUMN_INFO=($( load_column_info $(load_metadata) $COLUMN_NO ))
+
+#METADATA=$(load_metadata)
 
     echo "which column u want to update"
-    custom_read -p ">>" || return $?
-    if [ -z "$readout" ];then
-        return 0
-    elif ( [[ $readout =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
+         
+         custom_read -p ">>" || return $?
+         
+         update_me=$readout
+     
+METADATA=$(load_metadata)    
+   
+    if [ -z "$update_me" ];then
+    	echo "please enter a column not nothing"
+        
+        return 179
+    
+    elif ( [[ "$update_me" =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
+
         echo 1
-        update_me=$readout
-    elif [[ $readout =~ ^[_a-z] ]];then
+
+
+    elif [[ "$update_me" =~ ^[_a-z] ]];then
+
         echo 2
+
         update_me=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
+
     else
+
         echo -e "${RED}Please enter a correct input${ENDCOLOR}"
         return 555
 
     fi
     
+declare COLUMN_INFO=($( load_column_info $(load_metadata) "$update_me" ))
+    
     custom_read -p "insert the new value " ||return $?
     new_value=$readout
     
+            case ${COLUMN_INFO[1]} in
+        "int")
+            chk_datatype ${COLUMN_INFO[1]} $new_value ||return $?
+        ;;
+        "date")
+            chk_datatype ${COLUMN_INFO[1]} $new_value ||return $?
+        ;;
+        "text")
+            chk_datatype ${COLUMN_INFO[1]} $new_value ||return $?
+        ;;
+        *)
+            echo "sorry wrong data type"
+            return 198
+    esac
+    
+    
     # Check if updating primary key column
+    
     if [ "${COLUMN_INFO[2]}" == "pk" ]; then
+      
         # Get current values of primary key column
+      
         primary_key_values=$(awk -F':' 'BEGIN {OFS=":"} NR>1 {print $'"${COLUMN_NO}"'}' "$TABLE")
         
         # Check if new value already exists in primary key column
@@ -56,21 +94,7 @@ METADATA=$(load_metadata)
     
     
     return 0
-    
-        case ${COLUMN_INFO[1]} in
-        "int")
-            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
-        ;;
-        "date")
-            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
-        ;;
-        "text")
-            chk_datatype ${COLUMN_INFO[1]} $3 ||return $?
-        ;;
-        *)
-            echo "sorry wrong data type"
-            return 198
-    esac
+
 
 }
 
@@ -89,9 +113,11 @@ function condition_format()
 
 Get_Rows() { 
 
-      local RowsOfCondition
+      local RowsOfCondition	
       RowsOfCondition=$(where_fn $COLUMN_NO $CONDITION "$INPUT")
-      [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format)
+
+      local RC=$? 
+      [ $RC -eq 0 ] && echo "hi" && [ -n "$RowsOfCondition" ] && variable=$(echo "$RowsOfCondition" | increment_fn | condition_format) || { echo $RowsOfCondition; return $RC; }
 
     }
     
@@ -101,6 +127,7 @@ function update_table {
     local column="$3"
     local new_value="$4"
     local temp_file=$(mktemp)
+	echo "$variable"
     code="$condition { \$$column=\"$new_value\"}{ print }"
     awk -F':' -v OFS=':'  "$code" "$input_file" > "$temp_file"
     mv "$temp_file" "$input_file"
@@ -109,6 +136,6 @@ function update_table {
 }
     
    
-gathering && Get_Rows && where_menu && update_table $TABLE $variable $update_me "$new_value"	
+gathering && where_menu && Get_Rows && update_table $TABLE $variable $update_me "$new_value"	
 
 
