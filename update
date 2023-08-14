@@ -27,32 +27,25 @@ TABLE=$readout
          
          update_me=$readout
      
-METADATA=$(load_metadata)    
+         METADATA=$(load_metadata)    
    
-    if [ -z "$update_me" ];then
+        if [ -z "$update_me" ]; then
     	echo "please enter a column not nothing"
         
         return 179
     
-    elif ( [[ "$update_me" =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
-
-
-
-    elif [[ "$update_me" =~ ^[_a-z] ]];then
-
-        update_me=$(echo -n "$METADATA" | Get_column_number_from_name $readout)
-
-    else
-
+        elif ( [[ "$update_me" =~ ^[1-9]+[0-9]*$ ]] && [ $readout -le $(get_max_columns_no  $METADATA  ) ] ); then
+        echo "u entered a valid column "
+        else
         echo -e "${RED}Please enter a correct input${ENDCOLOR}"
         return 555
 
-    fi
+        fi
     
 declare COLUMN_INFO=($( load_column_info $(load_metadata) "$update_me" ))
     
-    custom_read -p "insert the new value " ||return $?
-    new_value=$readout
+       custom_read -p "insert the new value " ||return $?
+       new_value=$readout
     
             case ${COLUMN_INFO[1]} in
         "int")
@@ -67,7 +60,7 @@ declare COLUMN_INFO=($( load_column_info $(load_metadata) "$update_me" ))
         *)
             echo "sorry wrong data type"
             return 198
-    esac
+            esac
     
     
     # Check if updating primary key column
@@ -124,7 +117,7 @@ function update_table {
     local column="$3"
     local new_value="$4"
     local temp_file=$(mktemp)
-	echo "$variable"
+    
     code="$condition { \$$column=\"$new_value\"}{ print }"
     awk -F':' -v OFS=':'  "$code" "$input_file" > "$temp_file"
     mv "$temp_file" "$input_file"
