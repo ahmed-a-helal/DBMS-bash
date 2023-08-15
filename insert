@@ -39,4 +39,4 @@ insert() {
 		exit $?
 	fi
 }
-insert_data_reading && where_menu && insert 
+insert_data_reading && insert 
