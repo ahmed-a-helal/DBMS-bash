@@ -70,7 +70,7 @@ chk_table_columns() {
 }
 
 chk_table_name() {
-	[ -f $1 ] && [ -w $1 ] || {
+	[ -f "$1" ] && [ -w "$1" ] || {
 	echo -e "${RED}The Table is nonexistent or doesn't have the right permissions to access it${ENDCOLOR}"
 	return 50; }
 }
